@@ -1,4 +1,4 @@
-from obj import *
+from SR1 import *
 from math import * 
 import copy
 from collections import namedtuple
@@ -221,8 +221,8 @@ def load(filename,eye,center,up,transalte, scale, rotate, texture = None, shader
 			tC = V2(*var.tvertices[t3])
 			tD = V2(*var.tvertices[t4])
 
-			triangle(v1, v2, v3, texture = texture, texture_coords = (tA, tB, tC))
-			triangle(v1, v2, v3, texture = texture, texture_coords=(tA, tC, tD))
+			triangle(v1, v2, v3, texture = texture, texture_coords = (tA, tB, tC), intens = intens)
+			triangle(v1, v2, v3, texture = texture, texture_coords=(tA, tC, tD), intens = intens)
 
 
 
@@ -247,7 +247,7 @@ def bbox(A, B, C):
 	ys = sorted([A.y, B.y, C.y])
 	return V2(xs[0], ys[0]), V2(xs[2], ys[2])
 
-def triangle(A, B, C, texture = None, texture_coords = (), varying_normals = ()):
+def triangle(A, B, C, texture = None, texture_coords = (), varying_normals = (), intens = 0):
 	bbox_min, bbox_max = bbox(A, B, C)
 
 	for x in range(bbox_min.x, bbox_max.x + 1):
@@ -265,7 +265,8 @@ def triangle(A, B, C, texture = None, texture_coords = (), varying_normals = ())
 					color = gourad(triangle(A, B, C), 
 							bar = (w, v, u), 
 							varying_normals = varying_normals,
-							texture_coords = texture_coords
+							texture_coords = texture_coords,
+							intens = intens
 							)
 
 				z = A.z * w + B.z * v + C.z * u
@@ -289,7 +290,7 @@ def gourad(render, bar, **kwargs):
 
 	iA, iB, iC = [prod(n, render.luz) for n in kwargs['varying_normals']]
 
-	return bytes(map(lambda b: round(b*intens) if b * intens >0 else 0, color))
+	return bytes(map(lambda b: round(b*kwargs['intens']) if b * kwargs['intens'] >0 else 0, color))
 
 
 
