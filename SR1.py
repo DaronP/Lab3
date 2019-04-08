@@ -1,14 +1,5 @@
-"""
-Universidad del Valle de Guatemala
-Josue David Lopez Florian
-17081
-Graficas por computadora
-seccion 10
-"""
-
 import struct
 from collections import namedtuple
-#from random import randint as random
 
 def char(c):
 	return struct.pack("=c",c.encode('ascii'))
@@ -21,33 +12,24 @@ def color(r,g,b):
 
 
 
-#clase que funciona para crear un objeto, del cual surgira la imagen
 class Bitmap(object):
-	#se inicializan las variables con las cuales se trabajara para crear la imagen
 	def __init__(self, width,height):
-		#variables de ancho y altura delfondo de la imagen
 		self.width = width
 		self.height = height
-		#variables que dan posicion 0,0 en el viewport
 		self.Initx = 0
 		self.Inity = 0
-		#variables del ancho y largo de la ventana del viewport
 		self.vpwidth = 0
 		self.vpheight = 0
-		#variables que dan el color al fondo de la imagen
 		self.r1 = 0
 		self.g1 = 0
 		self.b1 = 0
-		#variables que dan el color al glVertex que dibuja pixeles en la pantalla
 		self.r2 = 255
 		self.g2 = 255
 		self.b2 = 255
-		#el framebuffer para pintar en la pantalla.
 		self.framebuffer = []
 		self.clear()
 
 
-	#funcion que limpia toda la imagen del fondo de un color
 	def clear(self):
 		self.framebuffer = [[color(self.r1,self.g1,self.b1) for x in range(self.width)] for y in range(self.height)]
 	def clearColor(self,a,c,d):
