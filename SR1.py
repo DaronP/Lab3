@@ -209,10 +209,12 @@ class Texture(object):
         image.close()
 
     def get_color(self, tx, ty, intensity=1):
-        x = int(tx * self.width)
-        y = int(ty * self.height)
-
-        return self.pixels[y][x]
+        x = int((tx) * self.width/2)
+        y = int((ty) * self.height/2)
+        try:
+        	return self.pixels[y][x]
+        except:
+            print(x,y)
 
 var = None
 def get_var():

@@ -192,9 +192,9 @@ def load(filename,eye,center,up,transalte, scale, rotate, texture = None, shader
 		x3=round(scal*(vertices[face[2][0]-1][0]+1)*(getwidth()/2))
 		y3=round(scal*(vertices[face[2][0]-1][1]+1)*(getwidth()/2))
 		z3=round(scal*(vertices[face[2][0]-1][2]+1)*(getwidth()/2))
-		n1 = face[0][2] - 1
-		n2 = face[1][2] - 1
-		n3 = face[2][2] - 1
+		nA = V3(*var.normals[face[0][2] - 1])
+		nB = V3(*var.normals[face[1][2] - 1])
+		nC = V3(*var.normals[face[2][2] - 1])
 
 		v1 = V3(x1,y1,z1)
 		v2 = V3(x2,y2,z2)
@@ -213,14 +213,13 @@ def load(filename,eye,center,up,transalte, scale, rotate, texture = None, shader
 			t1 = round(scal*(vertices[face[0][1] -1][0] + 1)*(getwidth()/2))
 			t2 = round(scal*(vertices[face[1][1] -1][0] + 1)*(getwidth()/2))
 			t3 = round(scal*(vertices[face[2][1] -1][0] + 1)*(getwidth()/2))
-			t4 = round(scal*(vertices[face[3][1] -1][0] + 1)*(getwidth()/2))
+			#t4 = round(scal*(vertices[face[3][1] -1][0] + 1)*(getwidth()/2))
 			tA = V2(*var.tvertices[t1])
 			tB = V2(*var.tvertices[t2])
 			tC = V2(*var.tvertices[t3])
-			tD = V2(*var.tvertices[t4])
+			#tD = V2(*var.tvertices[t4])
 
-			triangle(v1, v2, v3, texture = texture, texture_coords = (tA, tB, tC), intens = intens)
-			triangle(v1, v2, v3, texture = texture, texture_coords=(tA, tC, tD), intens = intens)
+			triangle(v1, v2, v3, texture = texture, texture_coords = (tA, tB, tC), varying_normals =(nA, nB, nC) )
 
 
 
@@ -245,7 +244,7 @@ def bbox(A, B, C):
 	ys = sorted([A.y, B.y, C.y])
 	return V2(xs[0], ys[0]), V2(xs[2], ys[2])
 
-def triangle(A, B, C, texture = None, texture_coords = (), varying_normals = (), intens = 0):
+def triangle(A, B, C, texture = None, texture_coords = (), varying_normals = ()):
 	bbox_min, bbox_max = bbox(A, B, C)
 
 	for x in range(bbox_min.x, bbox_max.x + 1):
@@ -256,15 +255,12 @@ def triangle(A, B, C, texture = None, texture_coords = (), varying_normals = (),
 				pass
 			else:
 				if texture:
-					tA, tB, tC = texture_coords
-					tx = tA.x * w + tB.x * v + tC.x * u
-					ty = tA.y * w + tB.y * v + tC.y * u
 					
 					color = gourad(triangle(A, B, C), 
 							bar = (w, v, u), 
+							texture = texture,
 							varying_normals = varying_normals,
-							texture_coords = texture_coords,
-							intens = intens
+							texture_coords = texture_coords
 							)
 
 				z = A.z * w + B.z * v + C.z * u
@@ -277,18 +273,20 @@ def triangle(A, B, C, texture = None, texture_coords = (), varying_normals = (),
 						pass
 
 	
-def gourad(render, bar, **kwargs):
+def gourad(render, bar, texture = None, **kwargs):
 	w, v, u = bar
 
 	tA, tB, tC = kwargs['texture_coords']
 	tx = tA.x * w + tB.x * v + tC.x + u
 	ty = tA.y * w + tB.y * v + tC.y + u
 
-	color = render.texture.get_color(tx, ty)
+	color = texture.get_color(tx, ty)
 
-	iA, iB, iC = [prod(n, render.luz) for n in kwargs['varying_normals']]
+	iA, iB, iC = [prod(n, V3(0,0,1)) for n in kwargs['varying_normals']]
 
-	return bytes(map(lambda b: round(b*kwargs['intens']) if b * kwargs['intens'] >0 else 0, color))
+	intensity = iA * w + iB * v + iC * u
+
+	return bytes(map(lambda b: round(b*intensity) if b * intensity >0 else 0, color))
 
 
 
