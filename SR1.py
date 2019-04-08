@@ -248,7 +248,7 @@ def glLine(x1,y1,x2,y2):
 
 
 def glFinish():
-	var.createFile("img.bmp")
+	var.createFile("out.bmp")
 
 def pointf(x, y, color):
 	var.puntofz(x, y, color)

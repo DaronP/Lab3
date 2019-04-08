@@ -53,7 +53,6 @@ def loadModelMatrix(transalte, scale, rotate):
 		]
 	
 	rotation_matrix =  mulmat(rotation_matrix_z,mulmat(rotation_matrix_y,rotation_matrix_x))
-	#Model = traslate_matrix @ rotation_matrix @ scale_matrix
 	model = mulmat(scale_matrix,mulmat(rotation_matrix,translate_matrix))
 	
 	return model
@@ -68,7 +67,6 @@ class Modelobj(object):
 		
 
 	def read(self):
-		#global view
 		for line in self.lines:
 			if line:
 				prefix, value = line.split(' ',1)
